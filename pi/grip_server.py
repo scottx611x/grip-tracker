@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # grip_server.py  –  live serial reader + Flask UI (polling JSON feed)
 
-import serial, threading, time, sys
+import serial, threading, time, sys, os
 from flask import Flask, render_template_string, request, redirect, jsonify
+from influxdb_client import InfluxDBClient, Point
+
 
 # ---------- serial port ---------------------------------------------------
 try:
@@ -37,6 +39,17 @@ def serial_reader():
         time.sleep(0.02)          # 20 ms
 
 threading.Thread(target=serial_reader, daemon=True).start()
+
+# ---------- Influx --------------------------------------------------------
+iclient = InfluxDBClient(
+            url="influxdb:8086",
+            token="",
+            org="garage")
+
+
+def write_max(user, value):
+    p = Point("grip_max").tag("user", user).field("value", value)
+    iclient.write_api().write("grip", "garage", p)
 
 # ---------- Flask app -----------------------------------------------------
 app = Flask(__name__)
@@ -84,6 +97,22 @@ async function poll(){
 window.onload = poll;
 </script>
 """
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    global current_user
+    saved = False
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "setname":
+            current_user = request.form["name"].strip() or "guest"
+        elif action == "savemax":
+            write_max(current_user, max_grip)
+        return redirect("/")         # avoid form-resubmission on reload
+    return render_template_string(HTML_PAGE,
+                                  user=current_user,
+                                  saved=saved,
+                                  m=f"{max_grip:.2f}")
 
 @app.route("/data")
 def data():
