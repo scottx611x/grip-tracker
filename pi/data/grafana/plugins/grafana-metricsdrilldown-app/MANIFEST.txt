@@ -1,0 +1,55 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "grafana",
+  "signedByOrg": "grafana",
+  "signedByOrgName": "Grafana Labs",
+  "plugin": "grafana-metricsdrilldown-app",
+  "version": "1.0.8",
+  "time": 1753810988289,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "plugin.json": "9ff4eb96fb54388d29469a83bed2e05eadad4512b50d88031075dbdff3413abd",
+    "792.js.map": "a02faaeddec87b172f010e2648b0964a2cf7e692700efa7efd833c4244fee112",
+    "836.js.map": "44ab980fab04f8792dc3a05bb37e4857e136f662cbd894b50e439517ad5d8c78",
+    "452.js": "a709556182e8372aeeef83053037e47056478f0ab9910992696e14c675afa380",
+    "img/breakdown.png": "3a3f840dbdad176301dc803a6a3654f48e1d63659b1697c19c4b56cf1e21f6fd",
+    "img/metrics-drilldown.png": "eef0ace68ed328773f9dddfd9f8b14c22c3e2f909aeab640263112251afca7f7",
+    "img/logo.svg": "9b1173977eee0f4b15219db78fe6e9f7e870bb47bcfd300312f35bf51bccf9f6",
+    "138.js.map": "95a7e85f49c8442ca121f328ee94718a373f3b6b87c9065fba499f6c80a02b20",
+    "module.js.map": "57f46417888ce8f07bc0ea0f23e110bd845f9de6a08eb1604b90ab4ed2ac18d9",
+    "5e493d758066ba82f810.wasm": "d677c9dd9edef48b486ed981625e1164bc27580c82c4601acad60a9c1a7e169d",
+    "README.md": "6e2a2da6bf18c2e28d0e6121db52cd8832c5047fba1ea6f5aa80b1c78582f94d",
+    "351.js": "734ebeb2e0f7411698d7981f528bdcee8dc6c9c67ed1f39334852999174a9e61",
+    "792.js": "9fd8254af528b25aafe2d839dedf78a479db2eb4d4f80679ad09bcf13775b362",
+    "module.js": "d83282dc7515105913b1c5b4aa56cde2e6b1cb405f4a3186a67752a1b0025280",
+    "944.js": "395648de0489bb1a2e7689394bfb2fae29a6341f10e396c27677bdaf8233862c",
+    "836.js": "1f8a604e5135b8c63f4bd7fb7eae016c3f7a8b8d210b1a54a5616bc3e3513c51",
+    "ac01ecbc64128d2f3e68.svg": "9b1173977eee0f4b15219db78fe6e9f7e870bb47bcfd300312f35bf51bccf9f6",
+    "138.js": "dc8af8ae264f6270e84cfbf70636fc8509304da5bc6900b5f321933aadc2994b",
+    "CHANGELOG.md": "73a2b734a65888f2d48a352f443beb7b0d8af694d72ca033edf4124bdee95ee3",
+    "78.js.map": "d08b2a56c2595c0793b2b2909650b320a1548374aa058ffc53ce46d6954b9143",
+    "LICENSE": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "944.js.map": "e62a80d97baaa4fc0cc7d805247f37857044c6515e05bf6ca0c31f8a99405b32",
+    "619.js.map": "e4c6ad76f8db19a639a3e1c9cb9103d2eab549b893b81d2f556bd2b02a7826a6",
+    "78.js": "08273a5e9f5280e565bc3a929316c8ad44444346c37d461f06ec4d582fe60f3c",
+    "138.js.LICENSE.txt": "9e0cb6b0d82ee46be39b054a3f76419242945d9dbfced78bca42fd65c082e71a",
+    "351.js.map": "8bdd3f556e4f0b6d36bd470ca84b86f6b2c67b6145e15c817b7a3db087320983",
+    "619.js": "580d2f0af1a0f1e8e21f8291fbc2e82e59e330f79017b59fc74080b5614e42b0",
+    "767.js": "4396e4489dffd33b5354868fa38baddd3be961acd945b1b9979c7461c85ee2e8",
+    "452.js.map": "fd3168031e1f6e465d0e328705bdfa6650409ee448815d107ec9fd84a85a7108",
+    "767.js.map": "a1dd37193cefe0836b37508f80ab325f91984335c972ee5f99e9c6b9299231e1"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+
+wsA9BAETCgBtBYJoiQgsCZB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
+aW9ucy5vcGVucGdwanMub3JnN+S41+HhPnV4eXp1t9zej2yi/mNN49dqocSj
+kNVLR2gWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAAmKcCBiyI4Q6k8E2uJAXd
+dy4RVLDgxEnxv0XyEuHfyebZq1Mwo7hUsHy/hrspK7V6D13oDHPTbMtK5avo
+mRhe8+nQ2cjbAgdpmhvIa/nUAVj8S0F79cq7pzfiqsuQ7pZp3f3IybOco77S
+HIJUPo0oB45kWqQshRvCLI2ji53ptgP6f0PLXcTFKg==
+=u4HV
+-----END PGP SIGNATURE-----
