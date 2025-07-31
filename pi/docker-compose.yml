@@ -37,6 +37,7 @@ services:
   grafana:
     image: grafana/grafana:12.1.0
     container_name: grafana
+    user: "0"
     restart: always
     volumes:
       - ./data/grafana:/var/lib/grafana
