@@ -8,8 +8,10 @@ services:
     devices:  # pass the USB serial adapter through
       - "/dev/ttyUSB0:/dev/ttyUSB0"
     depends_on: [influxdb]
+    env_file:
+      - .env
     environment:
-      - INFLUX_URL=http://pi:8086
+      - INFLUX_URL=http://influxdb:8086
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - INFLUX_ORG=garage
       - INFLUX_BUCKET=grip
@@ -23,9 +25,12 @@ services:
     restart: always
     volumes:
       - ./data/influx:/var/lib/influxdb2
+    env_file:
+      - .env
     environment:
       - INFLUXDB_ADMIN_USER=admin
       - INFLUXDB_ADMIN_PASSWORD=${ADMIN_PW}
+      - INFLUXDB_DB=grip
       - INFLUXDB_BUCKET=grip
       - INFLUXDB_ORG=garage
       - INFLUXDB_TOKEN=${INFLUX_TOKEN}
@@ -41,6 +46,8 @@ services:
     volumes:
       - ./data/grafana:/var/lib/grafana
       - ./grafana-provisioning:/etc/grafana/provisioning
+    env_file:
+      - .env
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PW}
       - GF_SECURITY_ADMIN_USER=admin
