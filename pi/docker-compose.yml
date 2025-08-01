@@ -25,16 +25,16 @@ services:
     restart: always
     volumes:
       - ./data/influx:/var/lib/influxdb2
+      - ./config/influx:/etc/influxdb2
     env_file:
       - .env
     environment:
-      - INFLUXDB_HTTP_AUTH_ENABLED=true
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_PASSWORD=${ADMIN_PW}
-      - INFLUXDB_DB=grip
-      - INFLUXDB_BUCKET=grip
-      - INFLUXDB_ORG=garage
-      - INFLUXDB_TOKEN=${INFLUX_TOKEN}
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${ADMIN_PW}
+      - DOCKER_INFLUXDB_INIT_ORG=grip
+      - DOCKER_INFLUXDB_INIT_BUCKET=grip
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN}
     networks: [gripnet]
     ports:
       - "8086:8086"
