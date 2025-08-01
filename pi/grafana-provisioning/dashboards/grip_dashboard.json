@@ -1,0 +1,18 @@
+{
+  "title": "Grip Max",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Max lbs per save",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "datasource": { "uid": "grip_ds" },
+          "query": "from(bucket:\"grip\") |> range(start: -12h) |> filter(fn:(r)=>r._measurement==\"grip_max\")"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}
