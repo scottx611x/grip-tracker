@@ -81,9 +81,11 @@ input,select{padding:.45rem .7rem;border-radius:6px;border:1px solid #666;backgr
 button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-weight:700;cursor:pointer;color:#000}
 /* canvas fills bottom */
 #fireCanvas{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  position:fixed;z-index:-1;
+  left:0;top:0;
+  width:100vw;height:100vh;
   image-rendering:pixelated;
-  width:100vw;height:auto;max-height:45vh;pointer-events:none;opacity:.9}
+  pointer-events:none;opacity:.9}
 </style>
 </head><body>
 
