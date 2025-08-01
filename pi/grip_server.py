@@ -39,6 +39,13 @@ def serial_reader():
                     continue
         time.sleep(0.02)          # 20 ms
 
+def reset_nodemcu():
+    """Toggle DTR to reset the ESP8266 on the NodeMCU board."""
+    SER.dtr = False          # drive DTR low  (EN pulled low) – reset asserted
+    time.sleep(0.1)          # ≥ 100 ms is safe
+    SER.reset_input_buffer() # discard any old bytes
+    SER.dtr = True           # release reset – board reboots
+
 threading.Thread(target=serial_reader, daemon=True).start()
 
 # ---------- Influx --------------------------------------------------------
@@ -105,6 +112,7 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
     </select>
     <button name=action value=setmeta>Set</button>
     <button name=action value=savemax>Save&nbsp;Max</button>
+    <button name=action value=reset style="background:#444;color:#fff">Clear</button>
   </form>
 </div>
 
@@ -198,12 +206,19 @@ poll();
 @app.route("/", methods=["GET","POST"])
 def index():
     global current_user, current_side
-    if request.method=="POST":
-        if request.form["action"]=="setmeta":
-            current_user=request.form["name"].strip() or "guest"
-            current_side=request.form["side"]
-        elif request.form["action"]=="savemax":
-            write_max(current_user, current_side, request.form["value"])
+    if request.method == "POST":
+        action = request.form["action"]
+        if action == "setmeta":
+            current_user = request.form["name"].strip() or "guest"
+            current_side = request.form["side"]
+        elif action == "savemax":
+            write_max(current_user, current_side, max_grip)
+        elif action == "reset":
+            reset_nodemcu()
+            # also clear session vars so UI resets instantly
+            global latest_grip, max_grip
+            latest_grip = 0.0
+            max_grip = 0.0
         return redirect("/")
     return render_template_string(HTML, user=current_user, side=current_side)
 
