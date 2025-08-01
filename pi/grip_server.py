@@ -63,21 +63,37 @@ HTML = r"""
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Grip Logger</title>
+<title>Grip Furnace</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {--accent:#ff7a18;--bg1:#1c1c1e;--bg2:#2b2b2e}
+:root{--accent:#ff7a18;--bg1:#141416;--bg2:#26262a;font-family:Inter,system-ui,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(145deg,var(--bg1),var(--bg2));color:#fff}
-.card{background:#0006;border:1px solid #ffffff22;border-radius:14px;padding:1.4rem 2rem;width:90vw;max-width:20rem;text-align:center;backdrop-filter:blur(6px)}
-h1{font-size:1.8rem;font-weight:700;margin-bottom:.2rem}
-.value{font-size:2.6rem;font-weight:700;margin:.3rem 0}
+body{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,var(--bg1),var(--bg2));color:#fff;overflow:hidden}
+.card{
+  backdrop-filter:blur(6px);background:#0006;padding:1.4rem 2rem;
+  border-radius:14px;border:1px solid #ffffff22;
+  width:90vw;max-width:20rem;text-align:center;z-index:10}
+h1{font-size:1.8rem;font-weight:700;margin-bottom:.3rem}
+.value{font-size:2.6rem;font-weight:700;margin:.35rem 0}
 form{margin-top:1.1rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
-input,select{padding:.4rem .6rem;border-radius:6px;border:1px solid #666;background:#1e1e20;color:#fff}
-button{background:var(--accent);border:none;border-radius:6px;padding:.45rem 1.1rem;font-weight:700;cursor:pointer;color:#000}
-.flame-wrap{margin:.8rem auto 0;height:120px;width:90px;position:relative}
-.flame{position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(45deg);width:40px;height:40px;background:var(--accent);border-radius:0 50% 50% 50%;animation:flicker .3s infinite alternate;filter:drop-shadow(0 0 8px #ffae40) drop-shadow(0 0 14px #ffae40)}
-@keyframes flicker{from{transform:translateX(-50%) rotate(45deg) scale(1)}to{transform:translateX(-50%) rotate(45deg) scale(1.08)}}
+input,select{padding:.45rem .7rem;border-radius:6px;border:1px solid #666;background:#1e1e20;color:#fff}
+button{background:var(--accent);border:none;border-radius:6px;padding:.5rem 1rem;font-weight:700;cursor:pointer;color:#000}
+/* ---- FLAME PARTICLES ---- */
+.flame{
+  position:fixed;bottom:-40px;left:50%;width:20px;height:28px;
+  background:var(--accent);border-radius:50% 50% 0 0;
+  transform:translateX(-50%) scale(0.8) rotate(0deg);
+  animation: rise 2.2s linear forwards, flick 0.3s infinite alternate;
+  pointer-events:none;filter:drop-shadow(0 0 8px #ffae40) drop-shadow(0 0 14px #ffae40)}
+@keyframes rise{
+  to{transform:translate(-50%,-140vh) scale(1) rotate(25deg);opacity:0}
+}
+@keyframes flick{
+  from{transform:translateX(-50%) scale(0.8) rotate(-5deg)}
+  to  {transform:translateX(-50%) scale(1.0) rotate(5deg)}
+}
 </style></head><body>
 
 <div class="card">
@@ -85,8 +101,6 @@ button{background:var(--accent);border:none;border-radius:6px;padding:.45rem 1.1
 
   <div>Grip&nbsp;force</div><div class=value id=grip>0.00&nbsp;lbs</div>
   <div>Session&nbsp;max</div><div class=value id=max>0.00&nbsp;lbs</div>
-
-  <div class="flame-wrap"><div class="flame" id=flame></div></div>
 
   <form method=post>
     <input name=name value="{{ user }}" placeholder="Your name">
@@ -102,24 +116,46 @@ button{background:var(--accent);border:none;border-radius:6px;padding:.45rem 1.1
 <script>
 const spanGrip=document.getElementById("grip");
 const spanMax =document.getElementById("max");
-const flame   =document.getElementById("flame");
 
+/* -------- Poll JSON every 200 ms -------- */
+let cur=0,max=0;
 async function poll(){
   try{
-    const r=await fetch("/data");if(!r.ok)throw Error(r.status);
-    const j=await r.json();
-    spanGrip.textContent=j.grip.toFixed(2)+" lbs";
-    spanMax .textContent=j.max .toFixed(2)+" lbs";
-    const pct=j.max?Math.min(j.grip/j.max,1):0;
-    flame.style.transform=`translateX(-50%) rotate(45deg) scale(${0.2+pct*0.8})`;
+    const r=await fetch("/data");if(r.ok){
+      const j=await r.json();cur=j.grip;max=j.max;
+      spanGrip.textContent=cur.toFixed(2)+" lbs";
+      spanMax .textContent=max.toFixed(2)+" lbs";
+    }
   }catch(e){}
   setTimeout(poll,200);
 }
-document.addEventListener("DOMContentLoaded",poll);
+poll();
+
+/* -------- Flame particle engine -------- */
+const HARD_GRIP=150;          // 150 lb considered 100 %
+let acc=0;                    // accumulator for fractional spawns
+function spawnFlame(){
+  const f=document.createElement("div");
+  f.className="flame";
+  const x=10+Math.random()*80;            // 10–90 vw
+  const scale=0.6+Math.random()*0.6;
+  f.style.left=x+"vw";
+  f.style.width=18*scale+"px";
+  f.style.height=25*scale+"px";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),2200);        // cleanup
+}
+function tick(){
+  /* spawnRate: 0–25 flames/sec based on grip/HARD_GRIP */
+  const rate=Math.min(cur/HARD_GRIP,1)*25;
+  acc+=rate/30;                           // 30 FPS tick
+  while(acc>=1){ spawnFlame(); acc--; }
+  requestAnimationFrame(tick);
+}
+tick();
 </script>
 </body></html>
 """
-
 @app.route("/", methods=["GET","POST"])
 def index():
     global current_user, current_side
