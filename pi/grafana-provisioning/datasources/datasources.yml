@@ -5,9 +5,9 @@ datasources:
     uid: grip_ds
     url: http://influxdb:8086
     jsonData:
-      version: Flux
-      organization: garage
+      database: grip
       defaultBucket: grip
       tlsSkipVerify: true
+      user: admin
     secureJsonData:
-      token: "${INFLUX_TOKEN}"
+      password: "${INFLUX_TOKEN}"
