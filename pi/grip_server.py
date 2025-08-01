@@ -14,7 +14,7 @@ except serial.SerialException as e:
 
 # ---------- shared state --------------------------------------------------
 latest_grip = 0.0
-session_max = 0.0            # highest value seen in session (either hand)
+max_grip = 0.0            # highest value seen in session (either hand)
 current_user = "guest"
 current_side = "right"
 
