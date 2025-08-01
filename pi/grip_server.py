@@ -215,10 +215,6 @@ def index():
             write_max(current_user, current_side, max_grip)
         elif action == "reset":
             reset_nodemcu()
-            # also clear session vars so UI resets instantly
-            global latest_grip, max_grip
-            latest_grip = 0.0
-            max_grip = 0.0
         return redirect("/")
     return render_template_string(HTML, user=current_user, side=current_side)
 
