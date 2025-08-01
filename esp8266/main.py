@@ -1,4 +1,4 @@
-from machine import Pin, I2C, UART
+from machine import Pin, I2C, UART, reset
 from time import ticks_us, ticks_diff, sleep_ms
 from i2c_lcd import I2cLcd
 from ssd1306 import SSD1306_I2C
@@ -70,6 +70,8 @@ try:
     main()
 except Exception:
     lcd.clear()
-    lcd.putstr("I need a reboot please <3")
+    lcd.putstr("Error detected\nRebooting... <3")
+
     uos.dupterm(uart, 1)
+    reset()
 

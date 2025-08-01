@@ -46,11 +46,6 @@ def reset_nodemcu():
     SER.reset_input_buffer() # discard any old bytes
     SER.dtr = True           # release reset – board reboots
 
-    global latest_grip
-    latest_grip = 0.0
-    global max_grip
-    max_grip = 0.0
-
 threading.Thread(target=serial_reader, daemon=True).start()
 
 # ---------- Influx --------------------------------------------------------
@@ -109,16 +104,14 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
   <div>Grip&nbsp;force</div><div class=value id=grip>0.00&nbsp;lbs</div>
   <div>Session&nbsp;max</div><div class=value id=max>0.00&nbsp;lbs</div>
 
-  <form method=post>
-    <input name=name value="{{ user }}" placeholder="Your name">
-    <select name=side>
-       <option value=right {% if side=='right' %}selected{% endif %}>Right</option>
-       <option value=left  {% if side=='left'  %}selected{% endif %}>Left</option>
-    </select>
-    <button name=action value=setmeta>Set</button>
-    <button name=action value=savemax>Save&nbsp;Max</button>
-    <button name=action value=reset style="background:#444;color:#fff">Clear</button>
-  </form>
+  <form id="metaForm" autocomplete="off">
+      <input  id="nameInput"  name="name" value="{{ user }}" placeholder="Your name">
+      <select id="sideSelect" name="side">
+         <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
+         <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
+      </select>
+      <button name="action" value="savemax">Save&nbsp;Max</button>
+      <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>  </form>
 </div>
 
 <!-- ----------  PIXEL FIRE ENGINE  (adapted from leonardosposina) --------- -->
@@ -205,6 +198,40 @@ async function poll(){
 }
 poll();
 </script>
+
+<script>
+/* ------------ live meta updates ----------------- */
+const nameInput  = document.getElementById("nameInput");
+const sideSelect = document.getElementById("sideSelect");
+const hUser      = document.getElementById("user");
+
+function sendMeta(){
+  const name = nameInput.value.trim() || "guest";
+  const side = sideSelect.value;
+  /* optimistic UI: update title immediately */
+  hUser.textContent = `${name} (${side.charAt(0).toUpperCase()+side.slice(1)})`;
+
+  fetch("/meta",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ name, side })
+  });
+}
+/* 'input' fires on every keystroke, 'change' on dropdown click */
+nameInput.addEventListener("input" , sendMeta);
+sideSelect.addEventListener("change", sendMeta);
+
+
+/* ----- hard-reset NodeMCU & zero counters ----- */
+document.getElementById("resetBtn").addEventListener("click", () =>{
+  fetch("/reset", {method:"POST"}).then(()=>{
+    /* reset UI immediately */
+    document.getElementById("grip").textContent = "0.00 lbs";
+    document.getElementById("max").textContent  = "0.00 lbs";
+  });
+});
+</script>
+
 </body></html>
 """
 
@@ -213,10 +240,7 @@ def index():
     global current_user, current_side
     if request.method == "POST":
         action = request.form["action"]
-        if action == "setmeta":
-            current_user = request.form["name"].strip() or "guest"
-            current_side = request.form["side"]
-        elif action == "savemax":
+        if action == "savemax":
             write_max(current_user, current_side, max_grip)
         elif action == "reset":
             reset_nodemcu()
@@ -227,6 +251,29 @@ def index():
 def data():
     """Return latest numbers as JSON for the polling JS."""
     return jsonify(grip=latest_grip, max=max_grip)
+
+@app.route("/meta", methods=["POST"])
+def meta():
+    global current_user, current_side, latest_grip, session_max
+    j    = request.get_json(silent=True) or {}
+    name = (j.get("name") or "guest").strip()
+    side = j.get("side", "right")
+
+    if side != current_side:
+        reset_nodemcu()
+        latest_grip  = 0.0
+        session_max  = 0.0
+
+    current_user, current_side = name, side
+    return ("", 204)
+
+@app.route("/reset", methods=["POST"])
+def reset_board():
+    reset_nodemcu()            # pulses DTR as before
+    global latest_grip, max_grip
+    latest_grip = 0.0
+    max_grip = 0.0
+    return ("", 204)
 
 # ---------- run -----------------------------------------------------------
 if __name__ == "__main__":
