@@ -109,15 +109,14 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
   <div>Grip&nbsp;force</div><div class=value id=grip>0.00&nbsp;lbs</div>
   <div>Session&nbsp;max</div><div class=value id=max>0.00&nbsp;lbs</div>
 
-  <form method=post>
-    <input name=name value="{{ user }}" placeholder="Your name">
-    <select name=side>
-       <option value=right {% if side=='right' %}selected{% endif %}>Right</option>
-       <option value=left  {% if side=='left'  %}selected{% endif %}>Left</option>
-    </select>
-    <button name=action value=setmeta>Set</button>
-    <button name=action value=savemax>Save&nbsp;Max</button>
-    <button name=action value=reset style="background:#444;color:#fff">Clear</button>
+  <form id="metaForm" autocomplete="off">
+      <input  id="nameInput"  name="name" value="{{ user }}" placeholder="Your name">
+      <select id="sideSelect" name="side">
+         <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
+         <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
+      </select>
+      <button name="action" value="savemax">Save&nbsp;Max</button>
+      <button name="action" value="reset"   style="background:#444;color:#fff">Clear</button>
   </form>
 </div>
 
@@ -205,6 +204,23 @@ async function poll(){
 }
 poll();
 </script>
+
+<script>
+/* ---- auto-push name / side whenever they change ---- */
+function sendMeta(){
+  fetch("/meta",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      name: document.getElementById("nameInput").value.trim()||"guest",
+      side: document.getElementById("sideSelect").value
+    })
+  });
+}
+document.getElementById("nameInput" ).addEventListener("change",sendMeta);
+document.getElementById("sideSelect").addEventListener("change",sendMeta);
+</script>
+
 </body></html>
 """
 
@@ -227,6 +243,15 @@ def index():
 def data():
     """Return latest numbers as JSON for the polling JS."""
     return jsonify(grip=latest_grip, max=max_grip)
+
+@app.route("/meta", methods=["POST"])
+def meta():
+    global current_user, current_side
+    j = request.get_json(silent=True) or {}
+    current_user = (j.get("name") or "guest").strip()
+    current_side = j.get("side" , "right")
+    return ("", 204)
+
 
 # ---------- run -----------------------------------------------------------
 if __name__ == "__main__":
