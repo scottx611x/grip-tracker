@@ -206,19 +206,26 @@ poll();
 </script>
 
 <script>
-/* ---- auto-push name / side whenever they change ---- */
+/* ------------ live meta updates ----------------- */
+const nameInput  = document.getElementById("nameInput");
+const sideSelect = document.getElementById("sideSelect");
+const hUser      = document.getElementById("user");
+
 function sendMeta(){
+  const name = nameInput.value.trim() || "guest";
+  const side = sideSelect.value;
+  /* optimistic UI: update title immediately */
+  hUser.textContent = `${name} (${side.charAt(0).toUpperCase()+side.slice(1)})`;
+
   fetch("/meta",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      name: document.getElementById("nameInput").value.trim()||"guest",
-      side: document.getElementById("sideSelect").value
-    })
+    body:JSON.stringify({ name, side })
   });
 }
-document.getElementById("nameInput" ).addEventListener("change",sendMeta);
-document.getElementById("sideSelect").addEventListener("change",sendMeta);
+/* 'input' fires on every keystroke, 'change' on dropdown click */
+nameInput.addEventListener("input" , sendMeta);
+sideSelect.addEventListener("change", sendMeta);
 </script>
 
 </body></html>
