@@ -136,15 +136,16 @@ function setFireSource(intensity){
 }
 
 function updateFire(){
-  for(let y=1;y<fireHeight;y++){
-    for(let x=0;x<fireWidth;x++){
-      const src = index(x,y);
-      const decay = Math.floor(Math.random()*3);
-      const below = src + fireWidth;
-      const newInt = Math.max(firePixels[below]-decay,0);
-      const dst = src - decay + 1;
-      firePixels[(dst<firePixels.length)?dst:src] = newInt;
-    }
+  /* iterate from row 0 up to next-to-last row (fireHeight-2) */
+  for (let y = 0; y < fireHeight - 1; y++){
+      for (let x = 0; x < fireWidth; x++){
+          const src   = index(x, y);
+          const below = src + fireWidth;
+          const decay = Math.floor(Math.random() * 3);
+          const newInt = Math.max(firePixels[below] - decay, 0);
+          const dst   = src - decay + 1;
+          firePixels[(dst < firePixels.length) ? dst : src] = newInt;
+      }
   }
 }
 
