@@ -254,10 +254,17 @@ def data():
 
 @app.route("/meta", methods=["POST"])
 def meta():
-    global current_user, current_side
-    j = request.get_json(silent=True) or {}
-    current_user = (j.get("name") or "guest").strip()
-    current_side = j.get("side" , "right")
+    global current_user, current_side, latest_grip, session_max
+    j    = request.get_json(silent=True) or {}
+    name = (j.get("name") or "guest").strip()
+    side = j.get("side", "right")
+
+    if side != current_side:
+        reset_nodemcu()
+        latest_grip  = 0.0
+        session_max  = 0.0
+
+    current_user, current_side = name, side
     return ("", 204)
 
 @app.route("/reset", methods=["POST"])
