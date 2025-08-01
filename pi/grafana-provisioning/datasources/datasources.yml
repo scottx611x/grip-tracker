@@ -1,13 +1,15 @@
 apiVersion: 1
 datasources:
-  - name: Influx
+  - name: InfluxQL
     uid:  grip_ds
     type: influxdb
     url:  http://influxdb:8086
     jsonData:
-      version: Flux
-      organization: Main Org.
-      defaultBucket: grip
-      tlsSkipVerify: true
+      httpMode: GET
+      httpHeaderName1: "accept"
+      httpHeaderValue1: "application/json"
+    basicAuth: true
+    basicAuthUser: admin
     secureJsonData:
-      token: ${INFLUX_TOKEN}
+      basicAuthPassword: ${ADMIN_PW}
+    database: grip
