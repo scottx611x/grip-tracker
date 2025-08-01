@@ -46,6 +46,11 @@ def reset_nodemcu():
     SER.reset_input_buffer() # discard any old bytes
     SER.dtr = True           # release reset – board reboots
 
+    global latest_grip
+    latest_grip = 0.0
+    global max_grip
+    max_grip = 0.0
+
 threading.Thread(target=serial_reader, daemon=True).start()
 
 # ---------- Influx --------------------------------------------------------
