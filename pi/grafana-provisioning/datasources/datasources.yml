@@ -8,8 +8,7 @@ datasources:
       httpMode: GET
       httpHeaderName1: "accept"
       httpHeaderValue1: "application/json"
-    basicAuth: true
-    basicAuthUser: admin
+      user: ${ADMIN_PW}
     secureJsonData:
-      basicAuthPassword: ${ADMIN_PW}
+      password: ${ADMIN_PW}
     database: grip
