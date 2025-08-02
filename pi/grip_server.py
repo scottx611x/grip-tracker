@@ -54,15 +54,14 @@ iclient = InfluxDBClient(
             url="influxdb:8086",
             token=os.environ["INFLUX_TOKEN"],
             org="grip")
-
+_influx_write_api = iclient.write_api()
 
 def write_max(user, side, value):
     p = (Point("grip_max")
          .tag("user", user)
          .tag("side", side)
          .field("value", value))
-    result = iclient.write_api().write("grip", "garage", p)
-    print(result)
+    _influx_write_api.write("grip", "grip", p)
 
 # ---------- Flask app -----------------------------------------------------
 app = Flask(__name__)
@@ -244,8 +243,6 @@ def index():
         action = request.form["action"]
         if action == "savemax":
             write_max(current_user, current_side, max_grip)
-        elif action == "reset":
-            reset_nodemcu()
         return redirect("/")
     return render_template_string(HTML, user=current_user, side=current_side)
 
