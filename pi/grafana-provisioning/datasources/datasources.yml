@@ -4,11 +4,11 @@ datasources:
     uid:  grip_ds
     type: influxdb
     url:  http://influxdb:8086
+    user: admin
     jsonData:
       httpMode: GET
       httpHeaderName1: "accept"
       httpHeaderValue1: "application/json"
-      user: ${ADMIN_PW}
     secureJsonData:
       password: ${ADMIN_PW}
     database: grip
