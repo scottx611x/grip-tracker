@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # grip_server.py  –  live serial reader + Flask UI (polling JSON feed)
+import os
 
 import serial, threading, time, sys
 from flask import Flask, render_template_string, request, redirect, jsonify
@@ -51,8 +52,8 @@ threading.Thread(target=serial_reader, daemon=True).start()
 # ---------- Influx --------------------------------------------------------
 iclient = InfluxDBClient(
             url="influxdb:8086",
-            token="",
-            org="garage")
+            token=os.environ["INFLUX_TOKEN"],
+            org="grip")
 
 
 def write_max(user, side, value):
@@ -60,7 +61,8 @@ def write_max(user, side, value):
          .tag("user", user)
          .tag("side", side)
          .field("value", value))
-    iclient.write_api().write("grip", "garage", p)
+    result = iclient.write_api().write("grip", "garage", p)
+    print(result)
 
 # ---------- Flask app -----------------------------------------------------
 app = Flask(__name__)
