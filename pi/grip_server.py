@@ -9,7 +9,7 @@ from influxdb_client import InfluxDBClient, Point
 
 # ---------- serial port ---------------------------------------------------
 try:
-    SER = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+    SER = serial.Serial('/dev/ttyUSB0', 9600, timeout=3)
 except serial.SerialException as e:
     sys.exit(f"Cannot open /dev/ttyUSB0: {e}")
 
@@ -105,14 +105,15 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
   <div>Grip&nbsp;force</div><div class=value id=grip>0.00&nbsp;lbs</div>
   <div>Session&nbsp;max</div><div class=value id=max>0.00&nbsp;lbs</div>
 
-  <form id="metaForm" autocomplete="off">
+<form id="metaForm" method="POST" action="/" autocomplete="off">
       <input  id="nameInput"  name="name" value="{{ user }}" placeholder="Your name">
       <select id="sideSelect" name="side">
          <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
          <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
       </select>
       <button name="action" value="savemax">Save&nbsp;Max</button>
-      <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>  </form>
+      <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>
+</form>
 </div>
 
 <!-- ----------  PIXEL FIRE ENGINE  (adapted from leonardosposina) --------- -->
