@@ -1,18 +1,274 @@
 {
-  "title": "Grip Max",
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
   "panels": [
     {
-      "type": "timeseries",
-      "title": "Max lbs per save",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "grip_ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "lbs"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "value"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "${__field.labels.user} (${__field.labels.side:upper:1})"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 13,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": { "uid": "grip_ds" },
-          "query": "from(bucket:\"grip\") |> range(start: -12h) |> filter(fn:(r)=>r._measurement==\"grip_max\")"
+          "datasource": {
+            "type": "influxdb",
+            "uid": "grip_ds"
+          },
+          "query": "from(bucket: \"grip\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"grip_max\")\n  |> aggregateWindow(every: v.windowPeriod, fn: max, createEmpty: false)\n  |> yield(name: \"max\")",
+          "refId": "A"
         }
-      ]
+      ],
+      "title": "Grip Strength",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "grip_ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 11,
+        "x": 13,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "query": "// 1. read only the period selected in Grafana’s time-picker\nfrom(bucket: \"grip\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n\n// 2. limit to the measurement that stores every Save-Max point\n  |> filter(fn: (r) => r._measurement == \"grip_max\")\n\n// 3. pick **one hand** for this panel\n  |> filter(fn: (r) => r.side == \"right\")        // \"left\" for the other panel\n\n// 4. collapse to 1 point per user (their strongest value in that period)\n  |> group(columns:[\"user\"])\n  |> max()                                       // keeps the largest _value\n  |> group()                                     // ungroups so Top works globally\n\n// 5. keep only the 10 highest\n  |> sort(columns: [\"_value\"], desc: true)\n  |> limit(n: 10)\n\n// 6. (optional) rename fields for a nicer table\n  |> keep(columns: [\"_time\", \"_value\", \"user\"])\n  |> rename(columns: {_value: \"lbs\", user: \"User\"})",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 10 Right Hand",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "grip_ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 11,
+        "x": 13,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "query": "// 1. read only the period selected in Grafana’s time-picker\nfrom(bucket: \"grip\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n\n// 2. limit to the measurement that stores every Save-Max point\n  |> filter(fn: (r) => r._measurement == \"grip_max\")\n\n// 3. pick **one hand** for this panel\n  |> filter(fn: (r) => r.side == \"left\")        // \"left\" for the other panel\n\n// 4. collapse to 1 point per user (their strongest value in that period)\n  |> group(columns:[\"user\"])\n  |> max()                                       // keeps the largest _value\n  |> group()                                     // ungroups so Top works globally\n\n// 5. keep only the 10 highest\n  |> sort(columns: [\"_value\"], desc: true)\n  |> limit(n: 10)\n\n// 6. (optional) rename fields for a nicer table\n  |> keep(columns: [\"_time\", \"_value\", \"user\"])\n  |> rename(columns: {_value: \"lbs\", user: \"User\"})",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 10 Left Hand",
+      "type": "table"
     }
   ],
-  "schemaVersion": 38,
-  "version": 1
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Grip it and rip it",
+  "uid": "3fb3b188-c5b4-426f-bf9c-cb411b14756c",
+  "version": 5
 }
