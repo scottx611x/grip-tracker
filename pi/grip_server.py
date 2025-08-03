@@ -74,7 +74,7 @@ HTML = r"""
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Grip Furnace</title>
+<title>grip it and rip it</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg1:#0d0d11;--bg2:#1d1d24;font-family:Inter,system-ui,sans-serif}
@@ -123,7 +123,9 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
 /* basic parameters */
 const fireWidth  = 90,    /* logical pixels   */
       fireHeight = 40,
-      HARD_GRIP  = 150;   /* lbs that equals full intensity */
+      HARD_GRIP  = 150,   /* lbs that equals full intensity */
+      BASE_INT   = 2,     /* <= always-on ember (0 = black, 2 ≈ barely visible) */
+      MAX_INT    = 42;    /* last index of the palette       */
 
 const firePixels = new Array(fireWidth * fireHeight).fill(0);
 const palette =["070707","1f0707","2f0f07","470f07","571707","671f07","771f07",
@@ -192,9 +194,12 @@ async function poll(){
       const j=await r.json();grip=j.grip;max=j.max;
       document.getElementById("grip").textContent=grip.toFixed(2)+" lbs";
       document.getElementById("max" ).textContent=max .toFixed(2)+" lbs";
-      /* intensity: map 0..HARD_GRIP to palette index 0..42 */
-      const pct = Math.min(grip/HARD_GRIP,1);
-      const intensity = Math.round(pct * (palette.length-1));
+      /* intensity: BASE_INT  … MAX_INT, proportional to grip */
+      const pct = Math.min(grip / HARD_GRIP, 1);
+      const intensity = Math.max(
+          BASE_INT,
+          Math.round(pct * MAX_INT)
+      );
       setFireSource(intensity);
     }
   }catch(e){}
