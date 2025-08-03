@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
   "links": [],
   "panels": [
     {
@@ -269,6 +268,5 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Grip it and rip it",
-  "uid": "3fb3b188-c5b4-426f-bf9c-cb411b14756c",
   "version": 5
 }
