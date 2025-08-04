@@ -68,8 +68,7 @@ services:
       HOST_PROC: /host/proc
       HOST_SYS: /host/sys
       HOST_ETC: /host/etc
-    group_add:
-      - 123
+    networks: [ gripnet ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc:/host/proc:ro
@@ -81,6 +80,7 @@ services:
   tempo:
     image: grafana/tempo:2.5.0
     command: [ "-config.file=/etc/tempo.yaml" ]
+    networks: [ gripnet ]
     volumes:
       - ./tempo/tempo.yaml:/etc/tempo.yaml
       - ./tempo-data:/var/tempo
@@ -89,6 +89,7 @@ services:
   otel:
     image: otel/opentelemetry-collector-contrib:0.99.0
     command: [ "--config=/etc/otel.yaml" ]
+    networks: [ gripnet ]
     volumes:
       - ./otel/otel.yaml:/etc/otel.yaml
     depends_on: [ tempo ]
