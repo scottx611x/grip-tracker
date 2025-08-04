@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 # grip_server.py  –  live serial reader + Flask UI (polling JSON feed)
+import os
 
 import serial, threading, time, sys
 from flask import Flask, render_template_string, request, redirect, jsonify
 from influxdb_client import InfluxDBClient, Point
+from influxdb_client.client.write_api import SYNCHRONOUS
+
 
 
 # ---------- serial port ---------------------------------------------------
 try:
-    SER = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+    SER = serial.Serial('/dev/ttyUSB0', 9600, timeout=3)
 except serial.SerialException as e:
     sys.exit(f"Cannot open /dev/ttyUSB0: {e}")
 
@@ -50,17 +53,18 @@ threading.Thread(target=serial_reader, daemon=True).start()
 
 # ---------- Influx --------------------------------------------------------
 iclient = InfluxDBClient(
-            url="influxdb:8086",
-            token="",
-            org="garage")
-
+            url="http://influxdb:8086",
+            token=os.environ["INFLUX_TOKEN"],
+            org="grip")
+_influx_write_api = iclient.write_api(write_options=SYNCHRONOUS)
 
 def write_max(user, side, value):
     p = (Point("grip_max")
          .tag("user", user)
          .tag("side", side)
          .field("value", value))
-    iclient.write_api().write("grip", "garage", p)
+    result = _influx_write_api.write(bucket="grip", record=p)
+    print(result)
 
 # ---------- Flask app -----------------------------------------------------
 app = Flask(__name__)
@@ -110,7 +114,7 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
          <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
          <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
       </select>
-      <button name="action" value="savemax">Save&nbsp;Max</button>
+      <button id="saveBtn">Save&nbsp;Max</button>
       <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>  </form>
 </div>
 
@@ -222,6 +226,22 @@ nameInput.addEventListener("input" , sendMeta);
 sideSelect.addEventListener("change", sendMeta);
 
 
+const saveBtn   = document.getElementById("saveBtn");
+const gripSpan  = document.getElementById("max");
+
+saveBtn.addEventListener("click", () =>{
+  fetch("/savemax",{
+    method : "POST",
+    headers: {"Content-Type":"application/json"},
+    body   : JSON.stringify({
+      value : parseFloat(gripSpan.textContent),   //  e.g. 137.2
+      name  : document.getElementById("nameInput").value.trim() || "guest",
+      side  : document.getElementById("sideSelect").value
+    })
+  }).then(r => r.ok ? alert("Saved!") : alert("Save failed"));
+});
+
+
 /* ----- hard-reset NodeMCU & zero counters ----- */
 document.getElementById("resetBtn").addEventListener("click", () =>{
   fetch("/reset", {method:"POST"}).then(()=>{
@@ -242,8 +262,6 @@ def index():
         action = request.form["action"]
         if action == "savemax":
             write_max(current_user, current_side, max_grip)
-        elif action == "reset":
-            reset_nodemcu()
         return redirect("/")
     return render_template_string(HTML, user=current_user, side=current_side)
 
@@ -274,6 +292,15 @@ def reset_board():
     latest_grip = 0.0
     max_grip = 0.0
     return ("", 204)
+
+@app.route("/savemax", methods=["POST"])
+def save_max():
+    j     = request.get_json(force=True)
+    user  = j.get("name","guest")
+    side  = j.get("side","right")
+    value = float(j["value"])
+    write_max(user, side, value)
+    return ("",204)
 
 # ---------- run -----------------------------------------------------------
 if __name__ == "__main__":
