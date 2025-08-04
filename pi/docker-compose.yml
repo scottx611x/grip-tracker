@@ -89,6 +89,8 @@ services:
       - ./tempo/tempo.yaml:/etc/tempo.yaml
       - ./tempo-data:/var/tempo
     ports: [ "3200:3200" ]             # OTLP, Jaeger & HTTP
+    restart: always
+    user: "0"
 
   otel:
     image: otel/opentelemetry-collector-contrib:0.99.0
