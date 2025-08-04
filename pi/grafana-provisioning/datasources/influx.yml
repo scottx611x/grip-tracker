@@ -12,10 +12,3 @@ datasources:
       tlsSkipVerify: true
     secureJsonData:
       token: ${INFLUX_TOKEN}
-  - name: Tempo
-    uid: tempo_ds
-    type: tempo
-    url: http://tempo:3200
-    access: proxy
-    isDefault: false
-    editable: false
