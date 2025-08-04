@@ -1,0 +1,11 @@
+auth_enabled: false
+server:
+  http_listen_port: 3200
+  http_path_prefix: /
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tmp/tempo
+    wal:
+      path: /tmp/tempo/wal

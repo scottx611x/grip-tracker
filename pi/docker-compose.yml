@@ -7,7 +7,7 @@ services:
     restart: always
     devices:  # pass the USB serial adapter through
       - "/dev/ttyUSB0:/dev/ttyUSB0"
-    depends_on: [influxdb]
+    depends_on: [ otel, influxdb ]
     env_file:
       - .env
     environment:
@@ -15,6 +15,8 @@ services:
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - INFLUX_ORG=garage
       - INFLUX_BUCKET=grip
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel:4318
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=grip-web
     networks: [gripnet]
     ports:
       - "80:80"
@@ -58,6 +60,37 @@ services:
     ports:
       - "3000:3000"
     depends_on: [influxdb]
+
+  telegraf:
+    image: telegraf:1.32-alpine
+    depends_on: [ influxdb ]
+    environment:
+      HOST_PROC: /host/proc
+      HOST_SYS: /host/sys
+      HOST_ETC: /host/etc
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc:/host/etc:ro
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    restart: always
+
+  tempo:
+    image: grafana/tempo:2.5.0
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/tmp
+    ports: [ "3200:3200" ]             # OTLP, Jaeger & HTTP
+
+  otel:
+    image: otel/opentelemetry-collector-contrib:0.99.0
+    command: [ "--config=/etc/otel.yaml" ]
+    volumes:
+      - ./otel/otel.yaml:/etc/otel.yaml
+    depends_on: [ tempo ]
+    restart: always
 
 networks:
   gripnet:
