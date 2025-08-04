@@ -64,6 +64,8 @@ services:
   telegraf:
     image: telegraf:1.32-alpine
     depends_on: [ influxdb ]
+    env_file:
+      - .env
     environment:
       HOST_PROC: /host/proc
       HOST_SYS: /host/sys
