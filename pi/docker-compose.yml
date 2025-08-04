@@ -68,6 +68,8 @@ services:
       HOST_PROC: /host/proc
       HOST_SYS: /host/sys
       HOST_ETC: /host/etc
+    group_add:
+      - 123
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc:/host/proc:ro
@@ -75,7 +77,7 @@ services:
       - /etc:/host/etc:ro
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     restart: always
-    user: root
+    user: "0"
   tempo:
     image: grafana/tempo:2.5.0
     command: [ "-config.file=/etc/tempo.yaml" ]
