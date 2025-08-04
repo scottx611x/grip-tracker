@@ -75,6 +75,7 @@ services:
       - /etc:/host/etc:ro
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     restart: always
+    user: "0"
 
   tempo:
     image: grafana/tempo:2.5.0
