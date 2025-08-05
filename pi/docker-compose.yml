@@ -15,7 +15,7 @@ services:
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - INFLUX_ORG=garage
       - INFLUX_BUCKET=grip
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT=tempo:4317
       - OTEL_RESOURCE_ATTRIBUTES=service.name=grip-web
     networks: [gripnet]
     ports:
@@ -88,7 +88,7 @@ services:
     volumes:
       - ./tempo/tempo.yaml:/etc/tempo.yaml
       - ./tempo-data:/var/tempo
-    ports: ["3200:3200", "4317:4317", "4318:4318"]            # OTLP, Jaeger & HTTP
+    ports: ["3200:3200", "4317:4317"]
     restart: always
     user: "0"
 
