@@ -7,7 +7,7 @@ services:
     restart: always
     devices:  # pass the USB serial adapter through
       - "/dev/ttyUSB0:/dev/ttyUSB0"
-    depends_on: [ otel, influxdb ]
+    depends_on: [ influxdb, tempo ]
     env_file:
       - .env
     environment:
