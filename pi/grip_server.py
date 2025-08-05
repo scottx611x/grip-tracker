@@ -27,6 +27,7 @@ trace.set_tracer_provider(
 )
 span_processor = BatchSpanProcessor(OTLPSpanExporter(
     endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
+    insecure=True
 ))
 trace.get_tracer_provider().add_span_processor(span_processor)
 
