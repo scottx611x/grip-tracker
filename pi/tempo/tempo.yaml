@@ -4,6 +4,13 @@ stream_over_http_enabled: true    # HTTP OTLP = port 4318
 server:
   http_listen_port: 3200
   http_path_prefix: /
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:                # enable HTTP 4318
+
 storage:
   trace:
     backend: local
