@@ -5,6 +5,14 @@ server:
   http_listen_port: 3200
   http_path_prefix: /
 
+metrics_generator:
+  storage:
+    path: /var/tempo/metrics
+  processor:
+    span_metrics:
+      dimensions:
+        - span.name
+
 storage:
   trace:
     backend: local
