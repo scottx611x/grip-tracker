@@ -88,7 +88,7 @@ services:
     volumes:
       - ./tempo/tempo.yaml:/etc/tempo.yaml
       - ./tempo-data:/var/tempo
-    ports: [ "3200:3200" ]             # OTLP, Jaeger & HTTP
+    ports: ["3200:3200", "4317:4317", "4318:4318"]            # OTLP, Jaeger & HTTP
     restart: always
     user: "0"
 
