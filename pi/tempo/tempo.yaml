@@ -1,5 +1,5 @@
 auth_enabled: false
-stream_over_http_enabled: true
+stream_over_http_enabled: true    # HTTP OTLP = port 4318
 
 server:
   http_listen_port: 3200
