@@ -15,7 +15,7 @@ services:
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - INFLUX_ORG=garage
       - INFLUX_BUCKET=grip
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
       - OTEL_RESOURCE_ATTRIBUTES=service.name=grip-web
     networks: [gripnet]
     ports:
@@ -91,16 +91,6 @@ services:
     ports: ["3200:3200", "4317:4317", "4318:4318"]            # OTLP, Jaeger & HTTP
     restart: always
     user: "0"
-
-  otel:
-    image: otel/opentelemetry-collector-contrib:0.99.0
-    container_name: otel
-    command: [ "--config=/etc/otel.yaml" ]
-    networks: [ gripnet ]
-    volumes:
-      - ./otel/otel.yaml:/etc/otel.yaml
-    depends_on: [ tempo ]
-    restart: always
 
 networks:
   gripnet:
