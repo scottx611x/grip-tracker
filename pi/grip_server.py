@@ -138,7 +138,7 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
          <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
          <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
       </select>
-      <button id="saveBtn">Save&nbsp;Max</button>
+      <button id="saveBtn" type="button">Save&nbsp;Max</button>
       <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>  </form>
 </div>
 
@@ -253,7 +253,9 @@ sideSelect.addEventListener("change", sendMeta);
 const saveBtn   = document.getElementById("saveBtn");
 const gripSpan  = document.getElementById("max");
 
-saveBtn.addEventListener("click", () =>{
+saveBtn.addEventListener("click", (e) =>{
+  e.preventDefault();
+
   fetch("/savemax",{
     method : "POST",
     headers: {"Content-Type":"application/json"},

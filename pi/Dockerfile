@@ -2,7 +2,8 @@ FROM python:3.11-alpine
 
 RUN apk add --no-cache gcc musl-dev linux-headers && \
     pip install --no-cache-dir flask pyserial influxdb-client \
-     opentelemetry-sdk opentelemetry-exporter-otlp opentelemetry-instrumentation-flask
+     opentelemetry-sdk opentelemetry-exporter-otlp opentelemetry-instrumentation-flask\
+     python-logging-loki
 
 WORKDIR /app
 COPY grip_server.py .
