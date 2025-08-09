@@ -8,6 +8,29 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+trace.set_tracer_provider(
+    TracerProvider(
+        resource=Resource.create(
+            {
+                "service.name": "grip-web",
+                "service.version": "1.0.0",
+            }
+        )
+    )
+)
+span_processor = BatchSpanProcessor(OTLPSpanExporter(
+    endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
+    insecure=True
+))
+trace.get_tracer_provider().add_span_processor(span_processor)
+
 
 # ---------- serial port ---------------------------------------------------
 try:
@@ -68,6 +91,7 @@ def write_max(user, side, value):
 
 # ---------- Flask app -----------------------------------------------------
 app = Flask(__name__)
+FlaskInstrumentor().instrument_app(app)
 
 HTML = r"""
 <!doctype html>
