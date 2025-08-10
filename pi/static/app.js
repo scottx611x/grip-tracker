@@ -125,21 +125,30 @@ document.getElementById("resetBtn").addEventListener("click", () =>{
 });
 
 (function(){
-    const section = document.getElementById('dashboardSection');
-    const btn = document.getElementById('toggleDashboard');
-    if(!section || !btn) return;
-    const KEY = 'dashboardHidden';
-    // initialize from saved state
-    const hidden = localStorage.getItem(KEY) === '1';
-    if(hidden){
-      section.classList.add('dashboard-hidden');
-      btn.setAttribute('aria-pressed','true');
-      btn.textContent = 'Show';
-    }
-    btn?.addEventListener('click', ()=>{
-      const isHidden = section.classList.toggle('dashboard-hidden');
-      localStorage.setItem(KEY, isHidden ? '1' : '0');
-      btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
-      btn.textContent = isHidden ? 'Show' : 'Hide';
-    });
-  })();
+  const section = document.getElementById('dashboardSection');
+  const btn = document.getElementById('toggleDashboard');
+  if(!section || !btn) return;
+  const KEY = 'dashboardHidden';
+  // initialize from saved state
+  const hidden = localStorage.getItem(KEY) === '1';
+  if(hidden){
+    section.classList.add('dashboard-hidden');
+    btn.setAttribute('aria-pressed','true');
+    btn.setAttribute('aria-expanded','false');
+    btn.title = 'Show dashboard';
+    btn.textContent = 'Show Dashboard';
+  } else {
+    btn.setAttribute('aria-pressed','false');
+    btn.setAttribute('aria-expanded','true');
+    btn.title = 'Hide dashboard';
+    btn.textContent = 'Hide Dashboard';
+  }
+  btn.addEventListener('click', ()=>{
+    const isHidden = section.classList.toggle('dashboard-hidden');
+    localStorage.setItem(KEY, isHidden ? '1' : '0');
+    btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+    btn.setAttribute('aria-expanded', isHidden ? 'false' : 'true');
+    btn.title = isHidden ? 'Show dashboard' : 'Hide dashboard';
+    btn.textContent = isHidden ? 'Show Dashboard' : 'Hide Dashboard';
+  });
+})();
