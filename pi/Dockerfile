@@ -8,9 +8,7 @@ RUN apk add --no-cache gcc musl-dev linux-headers libffi-dev && \
       opentelemetry-sdk==1.25.0 \
       opentelemetry-exporter-otlp==1.25.0 \
       opentelemetry-instrumentation-flask==0.46b0 \
-      python-logging-loki==0.3.1 \
-      gunicorn==21.2.0 \
-      gevent==24.2.1
+      python-logging-loki==0.3.1
 
 WORKDIR /app
 COPY grip_server.py .
