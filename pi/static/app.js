@@ -121,3 +121,12 @@ document.getElementById("resetBtn").addEventListener("click", () =>{
     showToast("Cleared");
   });
 });
+
+// ---------- GRAFANA DASHBOARD (full) ----------
+const grafanaFrame = document.getElementById("grafanaFrame");
+const GRAFANA_URL = "https://gripper.local:3000/d/6a5a83f2-21ac-4688-8186-2a1369683943/grip-it-and-rip-it?orgId=1&kiosk&theme=dark";
+
+if (grafanaFrame) {
+  // lazy-assign the src after the rest of the page is ready
+  requestAnimationFrame(() => { grafanaFrame.src = GRAFANA_URL; });
+}
