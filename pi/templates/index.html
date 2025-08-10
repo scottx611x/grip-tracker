@@ -13,6 +13,7 @@ body{
 .card{
   backdrop-filter:blur(6px);background:#0007;padding:1.4rem 2.1rem;
   border-radius:14px;border:1px solid #ffffff22;width:90vw;max-width:20rem;text-align:center;z-index:10}
+.card--wide{max-width:none;width:100%;padding:0;background:transparent;border:1px solid #ffffff22}
 h1{font-size:1.8rem;font-weight:700;margin-bottom:.3rem}
 .value{font-size:2.6rem;font-weight:700;margin:.35rem 0}
 form{margin-top:1.1rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
@@ -29,6 +30,11 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
 .header-actions{display:flex;align-items:center;gap:.5rem}
 .icon-btn{background:#222;border:1px solid #ffffff33;color:#fff;border-radius:6px;padding:.4rem .6rem;font-weight:700;cursor:pointer}
 .icon-btn[aria-pressed="true"]{background:#444}
+.dash-header{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-bottom:1px solid #ffffff22}
+.dash-header h2{font-size:1rem;margin:0;opacity:.85}
+.dashboard-body{position:relative;width:100%;background:#0f1115}
+.dashboard-body{height:clamp(360px,75vh,900px)}
+@media(min-width:1200px){.dashboard-body{height:clamp(420px,78vh,1000px)}}
 .dashboard-body{position:relative;width:100%;background:#0f1115;aspect-ratio:16/9}
 @media(min-height:800px){.dashboard-body{min-height:60vh}}
 
@@ -51,10 +57,14 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
     </form>
   </div>
 
-  <section id="dashboardSection" class="card" style="margin:0;width:100%;padding:0;overflow:hidden">
+  <section id="dashboardSection" class="card card--wide" style="margin:0;width:100%;padding:0;overflow:hidden">
+    <div class="dash-header">
+      <h2>Dashboard</h2>
+      <button id="toggleDashboard" class="icon-btn" type="button" aria-pressed="false" title="Show/Hide Dashboard">Hide</button>
+    </div>
     <div class="dashboard-body">
       <iframe id="grafanaFrame"
-              src="http://gripper.local:3000/d/6a5a83f2-21ac-4688-8186-2a1369683943/grip-it-and-rip-it?kiosk=true&theme=dark"
+              src="http://gripper.local:3000/d/6a5a83f2-21ac-4688-8186-2a1369683943/grip-it-and-rip-it?kiosk&theme=dark"
               title="Grip Metrics"
               loading="lazy"
               referrerpolicy="no-referrer"
