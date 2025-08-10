@@ -12,8 +12,13 @@ body{
   background:linear-gradient(145deg,var(--bg1),var(--bg2));color:#fff;overflow:hidden}
 .card{
   backdrop-filter:blur(6px);background:#0007;padding:1.4rem 2.1rem;
-  border-radius:14px;border:1px solid #ffffff22;width:90vw;max-width:20rem;text-align:center;z-index:10}
+  border-radius:14px;border:1px solid #ffffff22;width:90vw;max-width:22rem;text-align:center;z-index:10}
 .card--wide{max-width:none;width:100%;padding:0;background:transparent;border:1px solid #ffffff22}
+@media(max-width:899px){
+    .card{max-width:100%;}
+    h1{font-size:1.5rem}
+    .value{font-size:2.2rem}
+  }
 h1{font-size:1.8rem;font-weight:700;margin-bottom:.3rem}
 .value{font-size:2.6rem;font-weight:700;margin:.35rem 0}
 form{margin-top:1.1rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
@@ -30,12 +35,15 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
 .header-actions{display:flex;align-items:center;gap:.5rem}
 .icon-btn{background:#222;border:1px solid #ffffff33;color:#fff;border-radius:6px;padding:.4rem .6rem;font-weight:700;cursor:pointer}
 .icon-btn[aria-pressed="true"]{background:#444}
+.dash-toggle{position:absolute;top:.5rem;right:.5rem;z-index:10}
+.card--wide{position:relative}
 .dash-header{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-bottom:1px solid #ffffff22}
 .dash-header h2{font-size:1rem;margin:0;opacity:.85}
 .dashboard-body{position:relative;width:100%;background:#0f1115}
-.dashboard-body{height:clamp(360px,75vh,900px)}
-@media(min-width:1200px){.dashboard-body{height:clamp(420px,78vh,1000px)}}
-.dashboard-body{position:relative;width:100%;background:#0f1115;aspect-ratio:16/9}
+/* Mobile: tall and full width */
+@media(max-width:899px){.dashboard-body{height:min(72svh, 720px)}}
+/* Desktop: fill most of viewport */
+@media(min-width:900px){.dashboard-body{height:clamp(520px,78svh,1000px)}}
 @media(min-height:800px){.dashboard-body{min-height:60vh}}
 
 </style>
@@ -58,10 +66,7 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
   </div>
 
   <section id="dashboardSection" class="card card--wide" style="margin:0;width:100%;padding:0;overflow:hidden">
-    <div class="dash-header">
-      <h2>Dashboard</h2>
-      <button id="toggleDashboard" class="icon-btn" type="button" aria-pressed="false" title="Show/Hide Dashboard">Hide</button>
-    </div>
+    <button id="toggleDashboard" class="icon-btn dash-toggle" type="button" aria-pressed="false" title="Show/Hide Dashboard">Hide</button>
     <div class="dashboard-body">
       <iframe id="grafanaFrame"
               src="http://gripper.local:3000/d/6a5a83f2-21ac-4688-8186-2a1369683943/grip-it-and-rip-it?kiosk&theme=dark"
@@ -69,6 +74,7 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
               loading="lazy"
               referrerpolicy="no-referrer"
               allowfullscreen
+              tabindex="-1"
               style="position:absolute;inset:0;border:0;width:100%;height:100%">
       </iframe>
     </div>
