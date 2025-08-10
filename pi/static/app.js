@@ -122,20 +122,21 @@ document.getElementById("resetBtn").addEventListener("click", () =>{
   });
 });
 
-
-const section = document.getElementById('dashboardSection');
-const btn = document.getElementById('toggleDashboard');
-const KEY = 'dashboardHidden';
-// initialize from saved state
-const hidden = localStorage.getItem(KEY) === '1';
-if(hidden){
-  section.classList.add('dashboard-hidden');
-  btn.setAttribute('aria-pressed','true');
-  btn.textContent = 'Show';
-}
-btn?.addEventListener('click', ()=>{
-  const isHidden = section.classList.toggle('dashboard-hidden');
-  localStorage.setItem(KEY, isHidden ? '1' : '0');
-  btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
-  btn.textContent = isHidden ? 'Show' : 'Hide';
-});
+(function(){
+    const section = document.getElementById('dashboardSection');
+    const btn = document.getElementById('toggleDashboard');
+    const KEY = 'dashboardHidden';
+    // initialize from saved state
+    const hidden = localStorage.getItem(KEY) === '1';
+    if(hidden){
+      section.classList.add('dashboard-hidden');
+      btn.setAttribute('aria-pressed','true');
+      btn.textContent = 'Show';
+    }
+    btn?.addEventListener('click', ()=>{
+      const isHidden = section.classList.toggle('dashboard-hidden');
+      localStorage.setItem(KEY, isHidden ? '1' : '0');
+      btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+      btn.textContent = isHidden ? 'Show' : 'Hide';
+    });
+  })();
