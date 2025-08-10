@@ -21,40 +21,53 @@ button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-wei
 #fireCanvas{position:fixed;z-index:-1;left:0;top:0;width:100vw;height:100vh;image-rendering:pixelated;pointer-events:none;opacity:.9}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#16a34a;color:#fff;padding:.6rem 1rem;border-radius:8px;border:1px solid #ffffff33;box-shadow:0 6px 24px #0007;opacity:0;transition:opacity .25s ease,transform .25s ease;z-index:9999;font-weight:700}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
 .toast.error{background:#dc2626}
+.layout{display:grid;gap:1rem;align-items:start;width:90vw;max-width:72rem;margin:2rem auto}
+@media(min-width:900px){.layout{grid-template-columns:minmax(18rem,22rem) 1fr}}
+body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
+.dashboard-hidden{display:none}
+.header-actions{display:flex;align-items:center;gap:.5rem}
+.icon-btn{background:#222;border:1px solid #ffffff33;color:#fff;border-radius:6px;padding:.4rem .6rem;font-weight:700;cursor:pointer}
+.icon-btn[aria-pressed="true"]{background:#444}
+</style>
 </style>
 </head><body>
 <canvas id="fireCanvas"></canvas>
-<div class="card">
-  <h1 id=user>{{ user }} ({{ side|capitalize }})</h1>
-  <div>Grip&nbsp;force</div><div class=value id=grip>0.00&nbsp;lbs</div>
-  <div>Session&nbsp;max</div><div class=value id=max>0.00&nbsp;lbs</div>
-  <form id="metaForm" autocomplete="off">
-    <input id="nameInput" name="name" value="{{ user }}" placeholder="Your name">
-    <select id="sideSelect" name="side">
-      <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
-      <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
-    </select>
-    <button id="saveBtn" type="button">Save&nbsp;Max</button>
-    <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>
-  </form>
-</div>
+<div class="layout">
+  <div class="card">
+    <h1 id=user>{{ user }} ({{ side|capitalize }})</h1>
+    <div>Grip&nbsp;force</div><div class=value id=grip>0.00&nbsp;lbs</div>
+    <div>Session&nbsp;max</div><div class=value id=max>0.00&nbsp;lbs</div>
+    <form id="metaForm" autocomplete="off">
+      <input id="nameInput" name="name" value="{{ user }}" placeholder="Your name">
+      <select id="sideSelect" name="side">
+        <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
+        <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
+      </select>
+      <button id="saveBtn" type="button">Save&nbsp;Max</button>
+      <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>
+    </form>
+  </div>
 
-<section class="card" style="margin-top:1rem;width:90vw;max-width:72rem;padding:0;overflow:hidden">
-  <div style="padding:1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;border-bottom:1px solid #ffffff22">
-    <h2 style="font-size:1rem;margin:0">Dashboard</h2>
-    <small style="opacity:.8">Powered by Grafana</small>
-  </div>
-  <div style="position:relative;width:100%;aspect-ratio:16/9;background:#0f1115">
-    <iframe id="grafanaFrame"
-            src=""
-            title="Grip Metrics"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            allowfullscreen
-            style="position:absolute;inset:0;border:0;width:100%;height:100%">
-    </iframe>
-  </div>
-</section>
+  <section id="dashboardSection" class="card" style="margin:0;width:100%;padding:0;overflow:hidden">
+    <div style="padding:1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;border-bottom:1px solid #ffffff22">
+      <h2 style="font-size:1rem;margin:0">Dashboard</h2>
+      <div class="header-actions">
+        <button id="toggleDashboard" class="icon-btn" type="button" aria-pressed="false" title="Show/Hide Dashboard">Hide</button>
+      </div>
+    </div>
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#0f1115">
+      <iframe id="grafanaFrame"
+              src=""
+              title="Grip Metrics"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+              allowfullscreen
+              style="position:absolute;inset:0;border:0;width:100%;height:100%">
+      </iframe>
+    </div>
+  </section>
+</div>
 <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body></html>

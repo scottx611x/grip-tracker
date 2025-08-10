@@ -122,11 +122,20 @@ document.getElementById("resetBtn").addEventListener("click", () =>{
   });
 });
 
-// ---------- GRAFANA DASHBOARD (full) ----------
-const grafanaFrame = document.getElementById("grafanaFrame");
-const GRAFANA_URL = "http://gripper.local:3000/d/6a5a83f2-21ac-4688-8186-2a1369683943/grip-it-and-rip-it?orgId=1&kiosk&theme=dark";
 
-if (grafanaFrame) {
-  // lazy-assign the src after the rest of the page is ready
-  requestAnimationFrame(() => { grafanaFrame.src = GRAFANA_URL; });
+const section = document.getElementById('dashboardSection');
+const btn = document.getElementById('toggleDashboard');
+const KEY = 'dashboardHidden';
+// initialize from saved state
+const hidden = localStorage.getItem(KEY) === '1';
+if(hidden){
+  section.classList.add('dashboard-hidden');
+  btn.setAttribute('aria-pressed','true');
+  btn.textContent = 'Show';
 }
+btn?.addEventListener('click', ()=>{
+  const isHidden = section.classList.toggle('dashboard-hidden');
+  localStorage.setItem(KEY, isHidden ? '1' : '0');
+  btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+  btn.textContent = isHidden ? 'Show' : 'Hide';
+});
