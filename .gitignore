@@ -1,5 +1,6 @@
 /pi/data/
 /pi/tempo-data
 /pi/.env
+/pi/certs/*.pem
 
 .idea
