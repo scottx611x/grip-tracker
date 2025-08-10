@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grip Furnace</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#0d0d11;--bg2:#1d1d24;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,var(--bg1),var(--bg2));color:#fff;overflow:hidden}
+.card{
+  backdrop-filter:blur(6px);background:#0007;padding:1.4rem 2.1rem;
+  border-radius:14px;border:1px solid #ffffff22;width:90vw;max-width:20rem;text-align:center;z-index:10}
+h1{font-size:1.8rem;font-weight:700;margin-bottom:.3rem}
+.value{font-size:2.6rem;font-weight:700;margin:.35rem 0}
+form{margin-top:1.1rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+input,select{padding:.45rem .7rem;border-radius:6px;border:1px solid #666;background:#1e1e20;color:#fff}
+button{background:#f80;border:none;border-radius:6px;padding:.5rem 1rem;font-weight:700;cursor:pointer;color:#000}
+#fireCanvas{position:fixed;z-index:-1;left:0;top:0;width:100vw;height:100vh;image-rendering:pixelated;pointer-events:none;opacity:.9}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#16a34a;color:#fff;padding:.6rem 1rem;border-radius:8px;border:1px solid #ffffff33;box-shadow:0 6px 24px #0007;opacity:0;transition:opacity .25s ease,transform .25s ease;z-index:9999;font-weight:700}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:#dc2626}
+</style>
+</head><body>
+<canvas id="fireCanvas"></canvas>
+<div class="card">
+  <h1 id=user>{{ user }} ({{ side|capitalize }})</h1>
+  <div>Grip&nbsp;force</div><div class=value id=grip>0.00&nbsp;lbs</div>
+  <div>Session&nbsp;max</div><div class=value id=max>0.00&nbsp;lbs</div>
+  <form id="metaForm" autocomplete="off">
+    <input id="nameInput" name="name" value="{{ user }}" placeholder="Your name">
+    <select id="sideSelect" name="side">
+      <option value="right" {% if side=='right' %}selected{% endif %}>Right</option>
+      <option value="left"  {% if side=='left'  %}selected{% endif %}>Left</option>
+    </select>
+    <button id="saveBtn" type="button">Save&nbsp;Max</button>
+    <button id="resetBtn" type="button" style="background:#444;color:#fff">Clear</button>
+  </form>
+</div>
+<script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body></html>
