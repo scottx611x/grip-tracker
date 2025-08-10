@@ -1,9 +1,8 @@
-
-
 // ---------- FIRE ENGINE ----------
 const fireWidth  = 90;   // logical pixels (canvas width)
 const fireHeight = 40;   // logical pixels (canvas height)
 const HARD_GRIP  = 150;  // lbs at which flames hit max intensity
+const BASE_FIRE_INTENSITY = 5;   // keep a tiny flame always
 
 const firePixels = new Array(fireWidth * fireHeight).fill(0);
 const palette = [
@@ -52,7 +51,7 @@ function renderFire(){
 function fireLoop(){ updateFire(); renderFire(); requestAnimationFrame(fireLoop); }
 
 // show a little flame at idle
-setFireSource(5);
+setFireSource(BASE_FIRE_INTENSITY);
 fireLoop();
 
 // ---------- POLLING & INTENSITY MAPPING ----------
@@ -65,8 +64,11 @@ async function poll(){
       grip=j.grip; max=j.max;
       document.getElementById("grip").textContent = grip.toFixed(2)+" lbs";
       document.getElementById("max").textContent  =  max.toFixed(2)+" lbs";
-      const pct = Math.min(grip / HARD_GRIP, 1);
-      const intensity = Math.round(pct * (palette.length-1));
+      const pctRaw = grip / HARD_GRIP;
+      const pct = Math.max(0, Math.min(pctRaw, 1));
+      let intensity = Math.round(pct * (palette.length - 1));
+      if (!(intensity >= 0)) intensity = BASE_FIRE_INTENSITY; // fallback if NaN
+      intensity = Math.max(BASE_FIRE_INTENSITY, Math.min(intensity, palette.length - 1));
       setFireSource(intensity);
     }
   }catch(e){ /* ignore transient errors */ }
@@ -125,6 +127,7 @@ document.getElementById("resetBtn").addEventListener("click", () =>{
 (function(){
     const section = document.getElementById('dashboardSection');
     const btn = document.getElementById('toggleDashboard');
+    if(!section || !btn) return;
     const KEY = 'dashboardHidden';
     // initialize from saved state
     const hidden = localStorage.getItem(KEY) === '1';
