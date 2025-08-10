@@ -17,14 +17,9 @@ services:
       - INFLUX_BUCKET=grip
       - OTEL_EXPORTER_OTLP_ENDPOINT=tempo:4317
       - OTEL_RESOURCE_ATTRIBUTES=service.name=grip-web
-      - SSL_CERT=/certs/cert.pem
-      - SSL_KEY=/certs/key.pem
     networks: [gripnet]
     ports:
       - "80:80"
-      - "443:443"
-    volumes:
-      - ./certs:/certs:ro
 
   influxdb:
     image: influxdb:2.7

@@ -140,3 +140,7 @@ def save_max():
     write_max(user, side, value)
     return ("",204)
 
+# ---------- run -----------------------------------------------------------
+if __name__ == "__main__":
+    print("Serving on http://0.0.0.0:80  (Ctrl-C to quit)")
+    app.run(host="0.0.0.0", port=80)

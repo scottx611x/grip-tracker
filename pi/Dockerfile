@@ -18,4 +18,4 @@ COPY templates ./templates
 COPY static ./static
 
 ENV PYTHONUNBUFFERED=1
-CMD ["sh","-c","if [ -n \"$SSL_CERT\" ] && [ -n \"$SSL_KEY\" ]; then exec gunicorn -w 2 -k gevent --certfile \"$SSL_CERT\" --keyfile \"$SSL_KEY\" --bind 0.0.0.0:443 grip_server:app; else exec gunicorn -w 2 -k gevent --bind 0.0.0.0:80 grip_server:app; fi"]
+CMD python grip_server.py
