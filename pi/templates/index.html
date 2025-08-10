@@ -36,6 +36,8 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
 .icon-btn{background:#222;border:1px solid #ffffff33;color:#fff;border-radius:6px;padding:.4rem .6rem;font-weight:700;cursor:pointer}
 .icon-btn[aria-pressed="true"]{background:#444}
 .dash-toggle{position:absolute;top:.5rem;right:.5rem;z-index:10}
+.hidden-badge{display:none;position:absolute;left:.75rem;top:.75rem;background:#111;border:1px solid #ffffff33;color:#fff;border-radius:999px;padding:.25rem .6rem;font-size:.8rem;opacity:.9}
+.dashboard-hidden .hidden-badge{display:inline-flex}
 .card--wide{position:relative}
 .card--wide{overflow:visible}
 .dash-header{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-bottom:1px solid #ffffff22}
@@ -67,8 +69,8 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
   </div>
 
   <section id="dashboardSection" class="card card--wide" style="margin:0;width:100%;padding:0;min-height:48px">
-    <button id="toggleDashboard" class="icon-btn dash-toggle" type="button" aria-pressed="false" title="Show/Hide Dashboard">Hide</button>
-    <div class="dashboard-body">
+    <button id="toggleDashboard" class="icon-btn dash-toggle" type="button" aria-pressed="false" aria-controls="dashboardContent" aria-expanded="true" title="Hide dashboard">Hide Dashboard</button>
+    <div id="dashboardContent" class="dashboard-body">
       <iframe id="grafanaFrame"
               src="http://gripper.local:3000/d/6a5a83f2-21ac-4688-8186-2a1369683943/grip-it-and-rip-it?kiosk&from=now-30d&to=now&theme=dark&refresh=30s"
               title="Grip Metrics"
@@ -79,6 +81,7 @@ body{justify-content:flex-start;padding:1.5rem 0;gap:1rem}
               style="position:absolute;inset:0;border:0;width:100%;height:100%">
       </iframe>
     </div>
+    <div class="hidden-badge" aria-live="polite" aria-atomic="true">Dashboard hidden</div>
   </section>
 </div>
 <script src="{{ url_for('static', filename='app.js') }}" defer></script>
